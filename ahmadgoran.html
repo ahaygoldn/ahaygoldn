@@ -1,0 +1,133 @@
+
+<html lang="ku">
+<head>
+  <meta charset="UTF-8" />
+  <title>قەرزی پەنزین و گازوایل</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: auto; padding: 1rem; background: #f5f5f5 }
+    input, select, button { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
+    form { background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 0 5px #ccc; }
+    h2 { text-align: center; }
+  </style>
+</head>
+<body>
+  <h2>📝 فۆرمی قەرزی پەنزین و گازوایل</h2>
+
+  <form id="creditForm">
+    <input type="text" id="personName" placeholder="👤 ناو - نموونە: سی قۆڵی" required />
+    <input type="text" id="carNumber" placeholder="🔢 ژمارەی ئۆتۆمبیل" required />
+    <select id="carType">
+      <option value="سیارە">🚗 سیارە</option>
+      <option value="قالەب">🚛 قالەب</option>
+      <option value="تلیرە">🚜 تلیرە</option>
+    </select>
+    <select id="fuelType" required>
+      <option value="">⛽ -- جۆری سوتوەر --</option>
+      <option value="پەنزین">پەنزین</option>
+      <option value="گازوایل">گازوایل</option>
+    </select>
+    <input type="number" id="liters" placeholder="⛽ ژمارەی لەترەکان" required />
+    <input type="number" id="pricePerLiter" placeholder="💰 نرخی هر لەتر" readonly />
+    <button type="submit">📤 ناردن و تۆمارکردن</button>
+    <p id="status"></p>
+  </form>
+
+  <hr>
+
+  <h2>🔍 پشکنینی قەرزی کەس</h2>
+  <form id="searchForm">
+    <input type="text" id="searchName" placeholder="👤 ناوی کەس بنوسە بۆ پشکنین" required />
+    <button type="submit">🔎 پشکنین</button>
+  </form>
+
+  <div id="searchResult"></div>
+
+  <script>
+    const pricePetrol = 875;
+    const priceDiesel = 525;
+    const fuelTypeSelect = document.getElementById("fuelType");
+    const priceInput = document.getElementById("pricePerLiter");
+
+    const TOKEN = "6353613680:AAHzPeD0V07eCbxK4O7MtXdFtkIa0yM9d6Y";
+    const CHAT_ID = "2121432089";
+
+    // نرخ دان بە بنزین/گاز
+    fuelTypeSelect.addEventListener("change", () => {
+      priceInput.value = fuelTypeSelect.value === "پەنزین" ? pricePetrol :
+                         fuelTypeSelect.value === "گازوایل" ? priceDiesel : "";
+    });
+
+    // تۆمارکردن و ناردن
+    document.getElementById("creditForm").addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const name = document.getElementById("personName").value.trim();
+      const carNumber = document.getElementById("carNumber").value.trim();
+      const carType = document.getElementById("carType").value;
+      const fuelType = document.getElementById("fuelType").value;
+      const liters = parseFloat(document.getElementById("liters").value);
+      const pricePerLiter = parseFloat(document.getElementById("pricePerLiter").value);
+      const total = Math.round(liters * pricePerLiter);
+      const today = new Date().toLocaleDateString("ku-IQ");
+
+      const debt = {
+        name, carNumber, carType, fuelType, liters, pricePerLiter, total, date: today
+      };
+
+      // تۆمارکردن لە localStorage
+      const debts = JSON.parse(localStorage.getItem("debts") || "[]");
+      debts.push(debt);
+      localStorage.setItem("debts", JSON.stringify(debts));
+
+      // ناردن بۆ تێلەگرام
+      const msg = `📌 قەرزی سوتوەر:\n👤 ناو: ${name}\n🔢 ژمارەی ئۆتۆمبیل: ${carNumber}\n🚘 جۆری: ${carType}\n⛽ جۆری سوتوەر: ${fuelType}\n⛽ لەتر: ${liters}\n💰 نرخی هر لەتر: ${pricePerLiter} دینار\n💰 کۆی گشتی: ${total.toLocaleString()} دینار\n📅 بەروار: ${today}`;
+
+      try {
+        const response = await fetch(`https://api.telegram.org/bot${TOKEN}/sendMessage`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: msg
+          })
+        });
+
+        document.getElementById("status").innerText = response.ok
+          ? "✅ قەرزەکە تۆمار و نێردرا بۆ تێلەگرام"
+          : "❌ هەڵە لە ناردن بۆ تێلەگرام";
+      } catch (err) {
+        document.getElementById("status").innerText = "❌ کێشەی تۆڕ.";
+        console.error(err);
+      }
+
+      this.reset();
+    });
+
+    // پشکنینی ناو
+    document.getElementById("searchForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+      const searchName = document.getElementById("searchName").value.trim().toLowerCase();
+      const debts = JSON.parse(localStorage.getItem("debts") || "[]");
+      const results = debts.filter(d => d.name.toLowerCase() === searchName);
+      const resultDiv = document.getElementById("searchResult");
+      resultDiv.innerHTML = "";
+
+      if (results.length === 0) {
+        resultDiv.innerHTML = `<p>❌ هیچ قەرزێکت نەدۆزرایەوە بۆ "${searchName}"</p>`;
+        return;
+      }
+
+      let total = 0;
+      let html = `<h3>👤 قەرزەکانی ${searchName}:</h3><ul>`;
+      results.forEach((d, i) => {
+        html += `<li>${i + 1}) ⛽ ${d.fuelType} | ${d.liters} لەتر | 💰 ${d.total.toLocaleString()} دینار | 📅 ${d.date}</li>`;
+        total += d.total;
+      });
+      html += `</ul><p>💵 کۆی گشتی: ${total.toLocaleString()} دینار</p>`;
+      resultDiv.innerHTML = html;
+    });
+  </script>
+</body>
+</html>
