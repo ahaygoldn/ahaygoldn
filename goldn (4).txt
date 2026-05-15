@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>سیستەمی قەرزی بەنزینخانە</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:sans-serif;
+}
+
+body{
+background:#edf2f7;
+direction:rtl;
+}
+
+/* HEADER */
+
+header{
+background:linear-gradient(45deg,#0f172a,#1e293b);
+padding:25px;
+text-align:center;
+color:white;
+font-size:32px;
+font-weight:bold;
+box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+/* CONTAINER */
+
+.container{
+width:95%;
+max-width:1400px;
+margin:auto;
+padding:25px;
+}
+
+/* DASHBOARD */
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-bottom:25px;
+}
+
+.box{
+background:white;
+padding:25px;
+border-radius:18px;
+text-align:center;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+transition:0.3s;
+}
+
+.box:hover{
+transform:translateY(-5px);
+}
+
+.box h3{
+color:#64748b;
+margin-bottom:10px;
+}
+
+.box p{
+font-size:28px;
+font-weight:bold;
+color:#16a34a;
+}
+
+/* CARD */
+
+.card{
+background:white;
+padding:25px;
+border-radius:18px;
+margin-bottom:25px;
+box-shadow:0 5px 15px rgba(0,0,0,0.08);
+}
+
+.card h2{
+margin-bottom:20px;
+color:#0f172a;
+}
+
+/* GRID */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:15px;
+}
+
+/* INPUT */
+
+input,select{
+width:100%;
+padding:14px;
+border-radius:12px;
+border:1px solid #d1d5db;
+font-size:15px;
+outline:none;
+transition:0.3s;
+}
+
+input:focus,
+select:focus{
+border-color:#16a34a;
+box-shadow:0 0 5px rgba(22,163,74,0.3);
+}
+
+/* BUTTON */
+
+button{
+background:#16a34a;
+color:white;
+border:none;
+padding:14px 20px;
+border-radius:12px;
+cursor:pointer;
+font-size:15px;
+transition:0.3s;
+}
+
+button:hover{
+background:#15803d;
+transform:scale(1.02);
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+overflow:hidden;
+border-radius:15px;
+}
+
+table th{
+background:#0f172a;
+color:white;
+padding:14px;
+}
+
+table td{
+padding:14px;
+border-bottom:1px solid #e5e7eb;
+text-align:center;
+}
+
+/* STATUS */
+
+.good{
+color:#16a34a;
+font-weight:bold;
+}
+
+.warning{
+color:#f59e0b;
+font-weight:bold;
+}
+
+.bad{
+color:#dc2626;
+font-weight:bold;
+}
+
+/* RESULT */
+
+.result{
+background:#f8fafc;
+padding:20px;
+border-radius:15px;
+margin-top:20px;
+border:1px solid #e2e8f0;
+}
+
+/* FOOTER */
+
+footer{
+text-align:center;
+padding:20px;
+color:#64748b;
+}
+
+.small-btn{
+padding:8px 12px;
+font-size:13px;
+}
+
+.red{
+background:#dc2626;
+}
+
+.orange{
+background:#f59e0b;
+}
+
+.blue{
+background:#2563eb;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+⛽ سیستەمی قەرزی بەنزینخانە
+</header>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+
+<div class="dashboard">
+
+<div class="box">
+<h3>کۆی قەرز</h3>
+<p id="totalDebt">0 د.ع</p>
+</div>
+
+<div class="box">
+<h3>کۆی لیتەر</h3>
+<p id="totalLiter">0 L</p>
+</div>
+
+<div class="box">
+<h3>ژمارەی کڕیار</h3>
+<p id="customerCount">0</p>
+</div>
+
+<div class="box">
+<h3>قەرزی ئەمڕۆ</h3>
+<p id="todayDebt">0 د.ع</p>
+</div>
+
+</div>
+
+<!-- ADD -->
+
+<div class="card">
+
+<h2>➕ تۆمارکردنی قەرز</h2>
+
+<div class="grid">
+
+<input type="text" id="name" placeholder="ناوی کڕیار">
+
+<select id="vehicle">
+<option value="">جۆری ئۆتۆمبێل</option>
+<option>سیارە بچووک</option>
+<option>تلێر</option>
+<option>قەلابە</option>
+<option>تەرکتەر</option>
+<option>تانکەر</option>
+<option>باص</option>
+</select>
+
+<select id="fuel">
+<option value="">جۆری سووتەمەنی</option>
+<option>بەنزینی عادی</option>
+<option>بەنزینی سوپەر</option>
+<option>دیزل</option>
+<option>نەوت</option>
+</select>
+
+<input type="number" id="liter" placeholder="چەند لیتەر">
+
+<input type="number" id="price" placeholder="نرخی یەک لیتەر">
+
+<input type="text" id="plate" placeholder="ژمارەی تابلۆ">
+
+</div>
+
+<br>
+
+<button onclick="addDebt()">
+تۆمارکردنی قەرز
+</button>
+
+</div>
+
+<!-- SEARCH -->
+
+<div class="card">
+
+<h2>🔍 گەڕان بە ناوی کڕیار</h2>
+
+<div class="grid">
+
+<input type="text" id="searchInput" placeholder="ناوی کڕیار بنوسە">
+
+<button onclick="searchCustomer()">
+گەڕان
+</button>
+
+</div>
+
+<div class="result" id="searchResult">
+
+هیچ داتایەک نییە
+
+</div>
+
+</div>
+
+<!-- CONTROL -->
+
+<div class="card">
+
+<h2>⚙️ بەڕێوەبردنی سیستەم</h2>
+
+<div class="grid">
+
+<button class="blue" onclick="refreshSystem()">
+ریفریشکردنی ڕۆژانە
+</button>
+
+<input type="text" id="paidName" placeholder="ناوی کەسی پارەداو">
+
+<button onclick="markAsPaid()">
+پاککردنەوەی قەرز
+</button>
+
+<input type="text" id="blackName" placeholder="ناوی کەسی ڕەشکراو">
+
+<button class="red" onclick="blacklistCustomer()">
+ڕەشکردنەوە
+</button>
+
+</div>
+
+</div>
+
+<!-- TABLE -->
+
+<div class="card">
+
+<h2>📋 لیستی قەرزەکان</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>ناو</th>
+<th>جۆری ئۆتۆمبێل</th>
+<th>سووتەمەنی</th>
+<th>لیتەر</th>
+<th>نرخی لیتەر</th>
+<th>کۆی گشتی</th>
+<th>تابلۆ</th>
+<th>دۆخ</th>
+<th>کردار</th>
+</tr>
+
+</thead>
+
+<tbody id="tableBody">
+
+</tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 سیستەمی قەرزی بەنزینخانە
+</footer>
+
+<script>
+
+let customers = [];
+
+function addDebt(){
+
+let name = document.getElementById("name").value;
+let vehicle = document.getElementById("vehicle").value;
+let fuel = document.getElementById("fuel").value;
+let liter = document.getElementById("liter").value;
+let price = document.getElementById("price").value;
+let plate = document.getElementById("plate").value;
+
+if(name==""  vehicle==""  fuel==""  liter==""  price==""){
+
+alert("تکایە هەموو خانەکان پڕ بکەرەوە");
+return;
+
+}
+
+let total = liter * price;
+
+let status = "باش";
+let statusClass = "good";
+
+if(total >= 300000){
+
+status = "ڕەشکراوە";
+statusClass = "bad";
+
+}else if(total >= 100000){
+
+status = "ئاگاداری";
+statusClass = "warning";
+
+}
+
+customers.push({
+name,
+vehicle,
+fuel,
+liter,
+price,
+total,
+plate,
+status
+});
+
+reloadTable();
+updateDashboard();
+
+document.getElementById("name").value = "";
+document.getElementById("vehicle").value = "";
+document.getElementById("fuel").value = "";
+document.getElementById("liter").value = "";
+document.getElementById("price").value = "";
+document.getElementById("plate").value = "";
+
+}
+
+function reloadTable(){
+
+document.getElementById("tableBody").innerHTML = "";
+
+customers.forEach(c => {
+
+let statusClass = "good";
+
+if(c.status=="ئاگاداری"){
+statusClass = "warning";
+}
+
+if(c.status=="ڕەشکراوە"){
+statusClass = "bad";
+}
+
+let row = `
+<tr>
+
+<td>${c.name}</td>
+<td>${c.vehicle}</td>
+<td>${c.fuel}</td>
+<td>${c.liter} L</td>
+<td>${c.price} د.ع</td>
+<td>${c.total} د.ع</td>
+<td>${c.plate}</td>
+
+<td class="${statusClass}">
+${c.status}
+</td>
+
+<td>
+
+<button class="small-btn red"
+onclick="deleteCustomer('${c.name}')">
+سڕینەوە
+</button>
+
+</td>
+
+</tr>
+`;
+
+document.getElementById("tableBody").innerHTML += row;
+
+});
+
+}
+
+function updateDashboard(){
+
+let totalDebt = 0;
+let totalLiter = 0;
+
+customers.forEach(c => {
+
+totalDebt += Number(c.total);
+totalLiter += Number(c.liter);
+
+});
+
+document.getElementById("totalDebt").innerText =
+totalDebt + " د.ع";
+
+document.getElementById("totalLiter").innerText =
+totalLiter + " L";
+
+document.getElementById("customerCount").innerText =
+customers.length;
+
+document.getElementById("todayDebt").innerText =
+totalDebt + " د.ع";
+
+}
+
+function searchCustomer(){
+
+let search =
+document.getElementById("searchInput").value;
+
+let found =
+customers.find(c => c.name === search);
+
+if(found){
+
+document.getElementById("searchResult").innerHTML = `
+
+<p><strong>ناو:</strong> ${found.name}</p><br>
+
+<p><strong>جۆری ئۆتۆمبێل:</strong>
+${found.vehicle}</p><br>
+
+<p><strong>سووتەمەنی:</strong>
+${found.fuel}</p><br>
+
+<p><strong>لیتەر:</strong>
+${found.liter} L</p><br>
+
+<p><strong>کۆی قەرز:</strong>
+${found.total} د.ع</p><br>
+
+<p><strong>دۆخ:</strong>
+${found.status}</p>
+
+`;
+
+}else{
+
+document.getElementById("searchResult").innerHTML =
+"هیچ کڕیارێک نەدۆزرایەوە";
+
+}
+
+}
+
+function deleteCustomer(name){
+
+customers =
+customers.filter(c => c.name !== name);
+
+reloadTable();
+updateDashboard();
+
+}
+
+function refreshSystem(){
+
+if(confirm("دڵنیایت لە ریفریشکردنی سیستەم؟")){
+
+customers = [];
+
+reloadTable();
+updateDashboard();
+
+document.getElementById("searchResult").innerHTML =
+"هیچ داتایەک نییە";
+
+alert("سیستەم ریفریش کرا");
+
+}
+
+}
+
+function markAsPaid(){
+
+let paidName =
+document.getElementById("paidName").value;
+
+customers =
+customers.filter(c => c.name !== paidName);
+
+reloadTable();
+updateDashboard();
+alert("قەرز پاک کرایەوە");
+
+}
+
+function blacklistCustomer(){
+
+let blackName =
+document.getElementById("blackName").value;
+
+customers.forEach(c => {
+
+if(c.name === blackName){
+
+c.status = "ڕەشکراوە";
+
+}
+
+});
+
+reloadTable();
+
+alert("کڕیار ڕەش کرایەوە");
+
+}
+
+</script>
+
+</body>
+</html>
+
+
